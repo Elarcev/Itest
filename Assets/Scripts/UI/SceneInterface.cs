@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using System.Net.Sockets;
+using System.Net;
 
 public class SceneInterface : MonoBehaviour
 {
@@ -60,7 +62,7 @@ public class SceneInterface : MonoBehaviour
     private void NewVLCPlayer(string path = null)
     {
         if (!string.IsNullOrWhiteSpace(path)) _customPath = path;
-        else _customPath = "rtsp://192.168.0.118:5000/live";
+        else _customPath = $"rtsp://{LocalIPAddress()}:8554";
 
         if (_VLCplayer == null)
         {
@@ -118,4 +120,20 @@ public class SceneInterface : MonoBehaviour
     }
 
     private void DebugTextChanged(string text) => _debugText.text = text;
+
+    public static string LocalIPAddress()
+    {
+        IPHostEntry host;
+        string localIP = "0.0.0.0";
+        host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (IPAddress ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                localIP = ip.ToString();
+                break;
+            }
+        }
+        return localIP;
+    }
 }
