@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class SceneInterface : MonoBehaviour
 {
@@ -59,7 +60,7 @@ public class SceneInterface : MonoBehaviour
     private void NewVLCPlayer(string path = null)
     {
         if (!string.IsNullOrWhiteSpace(path)) _customPath = path;
-        else _customPath = "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mp4";
+        else _customPath = "rtsp://192.168.0.118:5000/live";
 
         if (_VLCplayer == null)
         {
@@ -84,10 +85,15 @@ public class SceneInterface : MonoBehaviour
             _VLCplayer.Open();
         else
             NewVLCPlayer();
-        if(_VLCplayer.mediaPlayer.Channel != LibVLCSharp.AudioOutputChannel.Error)
+
+        try
         {
-            ActionController.s_VideoPlaying?.Invoke(true);
+            if (_VLCplayer != null && _VLCplayer.mediaPlayer.Media != null && _VLCplayer.mediaPlayer.Channel != LibVLCSharp.AudioOutputChannel.Error)
+            {
+                ActionController.s_VideoPlaying?.Invoke(true);
+            }
         }
+        catch (Exception ex) { Debug.Log(ex.Message); }
     }
     private void OnEnable()
     {
